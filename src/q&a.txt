@@ -1,84 +1,117 @@
-Which of the following is another name for Software Piracy?
-a) Pirates
-b) SOPA
-c) Copyright Infringement of Software
-d) SOSA
-c
-Hint It is commonly called this by Government Officials.
-What is torrenting?
-a) The file type for programs such as Bittorrent to open to obtain illegal files
-b) A file in which it stores your browsing history on your computer.
-c) Visiting a piracy website
-d) Using your computer to remotely take over another computer unwillingly.
-a
-Hint It has to deal with certain types of files
-Which of the following is a Cyberlocker site?
-a) PirateBay
-b) RapidShare
-c) Youtube
-d) DailyMotion
+013
+LOW
+In the UK, the abbreviation NHS stands for National what Service?
+a) Humanity
+b) Health
+c) Honour
+d) Household
 b
-Hint A Cyberlocker site is one where you can store many files on a personal account
-Which of the following countries has the highest rate of piracy?
-a) Armenia
-b) Canada
-c) United States
-d) China
+Hint: Starts with an H in case you missed it
+014
+LOW
+Which Disney character famously leaves a glass slipper behind at a royal ball?
+a) Pocahontas
+b) Sleeping Beauty
+c) Cinderella
+d) Elsa
+c
+Hint: The protagonist is a young woman living in forsaken circumstances that are suddenly changed to remarkable fortune
+015
+LOW
+What name is given to the revolving belt machinery in an airport that delivers checked luggage from the plane to baggage reclaim?
+a) Hangar
+b) Terminal
+c) Concourse
+d) Carousel
+d
+Hint: The baggage comes out through one of the holes in the walls and goes back in
+016
+MEDIUM
+The hammer and sickle is one of the most recognisable symbols of which political ideology?
+a) Republicanism
+b) Communism
+c) Conservatism
+d) Liberalism
+b
+Hint: The most recognisable symbols are the hammer and the sickle
+017
+LOW
+Which toys have been marketed with the phrase “robots in disguise”?
+a) Bratz Dolls
+b) Sylvanian Families
+c) Hatchimals
+d) Transformers
+d
+Hint: First movie was created in the year of 2007
+018
+HARD
+What does the word loquacious mean?
+a) Angry
+b) Chatty
+c) Beautiful
+d) Shy
+b
+Hint: Some common synonyms of loquacious are garrulous or voluble
+019
+LOW
+Obstetrics is a branch of medicine particularly concerned with what?
+a) Childbirth
+b) Broken bones
+c) Heart conditions
+d) Old age
 a
-Hint This country's president is named Serzh Sargsyan
-Around the world, many websites are used for piracy, Which of the following is the most used?
-a) torrent.com
-b) IsoHunt
-c) TorrentReactor
-d) ThePirateBay
-d
-Hint This website is based off of using Torrents.
-Around the world, Much of the data transfered using P2P networks are copyrighted. Which of the following percentages is the closest?
-a) 92%
-b) 52%
-c) 33%
-d) 99%
-d
-Hint It is significantly high.
-What is the percentage of softwares that are running worldwide and are downloaded illegally?
-a) 52%
-b) 49%
-c) 42%
-d) 73%
-c
-Hint This number was taken in 2010 and is less than 50%
-In 2010, the amount of software downloaded illegally was worth how much?
-a) 23 Million Dollars
-b) 32 Million Dollars
-c) 59 Billion Dollars
-d) 59 Million Dollars
-c
-Hint The software downloaded illegally was worth quite a bit.
-In 2010, Which of the following movies was pirated the most on the internet?
-a) Avatar
-b) Kick-Ass
-c) Inception
-d) Iron Man 2
+Hint: Prior to the 18th century, this particular field in Europe, was confined exclusively to women and rigorously excluded men
+020
+HIGH
+Which of these religious observances lasts for the shortest period of time during the calendar year?
+a) Ramadan
+b) Diwali
+c) Lent
+d) Hanukkah
+b
+Hint: Called the festival of lights it usually lasts five days
+021
+MEDIUM
+At the closest point, which island group is only 50 miles south-east of the coast of Florida?
+a) Bahamas
+b) US Virgin Islands
+c) Turks and Caicos Islands
+d) Bermuda
 a
-Hint This movie was also one of the most popular movies in 2010.
-What is the most pirated piece of software on the Internet?
-a) Windows Vista
-b) Windows XP
-c) Microsoft Office
-d) Adobe Photoshop CS
+Hint: The capital is Nassau on the island of New Providence
+022
+HIGH
+Construction of which of these famous landmarks was completed first?
+a) Empire State Building
+b) Royal Albert Hall
+c) Eiffel Tower
+d) Big Ben Clock Tower
 d
-Hint This software is very commonly used for Graphics Design
-In 2010, Second most popular movie was Batman The Dark Knight. How many pirated downloads did it have?
-a) 10 Million
-b) 30 Million
-c) 19 Million
-d) 17 Million
+Hint: The tower was designed by Augustus Pugin in a neo-Gothic style and was completed in 1859
+023
+MEDIUM
+Which of these cetaceans is classified as a “toothed whale”?
+a) Gray whale
+b) Minke whale
+c) Sperm whale
+d) Humpback whale
 c
-Hint Avatar, The most popular movie, had around 21 million downloads.
-In 2010, Many Video Games were pirated for use. Which of the following was the most pirated?
-a) Tom Clancy HAWX
-b) Call of Duty Modern Warfare 3
-c) Call of Duty Black Ops
-d) Battlefield 2 Bad Company
-d
-Hint This game was created by Treyarch Inc.
+Hint: They usually are called Cachalot
+024
+HIGH
+Who is the only British politician to have held all four “Great Offices of State” at some point during their career?
+a) David Lloyd George
+b) Harold Wilson
+c) James Callaghan
+d) John Major
+c
+Hint: He was Prime Minister from 1976 to 1979
+025
+HIGH
+In 1718, which pirate died in battle off the coast of what is now North Carolina?
+a) Calico Jack
+b) Blackbeard
+c) Bartholomew Roberts
+d) Captain Kidd
+b
+Hint: His real name was Edward Teach

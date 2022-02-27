@@ -6,7 +6,7 @@ import java.net.Socket;
 public class Player {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Player player = new Player();
         try {
             player.start("localhost", 8082);

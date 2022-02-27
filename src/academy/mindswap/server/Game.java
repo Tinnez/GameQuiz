@@ -15,186 +15,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class Game implements Runnable{
+public class Game implements Runnable {
 
-    private List<Question> questions = new LinkedList<>();
-    private PlayerConnectionHandler player;
+    private final List<PlayerConnectionHandler> players;
     private int totalNumberOfQuestions;
+    private final int numberOfPlayers;
 
-
-
-    public Game() {
+    public Game(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
 //        this.player = null;
         this.players = new CopyOnWriteArrayList<>();
         // players = Collections.synchronizedList(new ArrayList<>());
         //   players = new ArrayList<>();
     }
 
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public int getQuestionsAsked() {
-        return questions.size();
-    }
-
-    private boolean repeatedQuestion(String checkQuestion) {
-        for (Question question : questions) {
-            if (question.getQuestion().equals(checkQuestion)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int getTotalNumberOfQuestions() {
-        try {
-            this.totalNumberOfQuestions = Files.readAllLines(Paths.get("./src/q&a.txt")).stream()
-                    .filter(q -> q.endsWith("?"))
-                    .toList()
-                    .size();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return totalNumberOfQuestions;
-    }
-
-    public Question pickRandomQuestion() throws IOException {
-
-        BufferedReader reader = new BufferedReader(new FileReader("./src/q&a.txt"));
-
-        int lines = 0;
-
-        while (reader.readLine() != null) {
-            lines++;
-        }
-
-        List<String> file = Files.readAllLines(Paths.get("./src/q&a.txt"));
-        int randomNumber = (int) ((Math.random() * (lines - 0)) + 0);
-        String randomQuestion = file.get(randomNumber);
-
-        if (randomQuestion.endsWith("?") && !repeatedQuestion(randomQuestion)) {
-
-            Question question = new Question();
-
-            question.setQuestion(randomQuestion);
-            question.setQuestionID(file.get(randomNumber - 2));
-            question.setDifficulty(file.get(randomNumber - 1));
-            question.setAnswerA(file.get(randomNumber + 1));
-            question.setAnswerB(file.get(randomNumber + 2));
-            question.setAnswerC(file.get(randomNumber + 3));
-            question.setAnswerD(file.get(randomNumber + 4));
-            question.setCorrectAnswer(file.get(randomNumber + 5));
-            question.setHint(file.get(randomNumber + 6));
-            question.setQuestionLine(randomNumber + 1);
-
-            questions.add(question);
-
-            reader.close();
-
-            return question;
-        }
-
-        return pickRandomQuestion();
-    }
-
-    public void showRandomQuestion() throws IOException {
-
-        if (getQuestionsAsked() >= getTotalNumberOfQuestions()) {
-            System.out.printf(GameMessages.NO_MORE_QUESTIONS);
-            return;
-        }
-
-        Question question = pickRandomQuestion();
-        formatQuestions(question);
-    }
-
-    public void showQuestion(Question question) throws IOException {
-
-        if (getQuestionsAsked() >= getTotalNumberOfQuestions()) {
-            System.out.printf(GameMessages.NO_MORE_QUESTIONS);
-            return;
-        }
-
-        formatQuestions(question);
-    }
-
-    public void showQuestion(String QuestionID) throws IOException {
-
-        if (getQuestionsAsked() >= getTotalNumberOfQuestions()) {
-            System.out.printf(GameMessages.NO_MORE_QUESTIONS);
-            return;
-        }
-
-        String questionID = "132";
-
-        questions.stream().map(q -> q.getQuestionID()).filter(q -> q.equals(questionID)).toList();
-
-//            formatQuestions(questionID);
-    }
-
-    private Question findQuestionByID(String questionID) throws IOException {
-
-        List<String> file = Files.readAllLines(Paths.get("./src/q&a.txt"));
-
-        String IDNumber = file.stream().filter(s -> s.equals(questionID)).toString();
-
-        for (Question question : questions) {
-            if (question.getQuestionID().equals(questionID)) {
-                return question;
-            }
-        }
-
-        return null;
-    }
-
-
-    public Question pickQuestionByID(String idQuestion) throws IOException {
-
-        BufferedReader reader = new BufferedReader(new FileReader("./src/q&a.txt"));
-
-        int lines = 0;
-
-        while (reader.readLine() != null) {
-            lines++;
-        }
-
-        List<String> file = Files.readAllLines(Paths.get("./src/q&a.txt"));
-//        int number = Integer.parseInt(file.stream().filter(s -> s.equals(idQuestion)).toString());
-        String IDNumber = file.stream().filter(s -> s.equals(idQuestion)).toString();
-
-
-//        if (questionString.endsWith("?") && !repeatedQuestion(questionString)) {
-//
-//
-//            Question question = new Question();
-//
-//            question.setQuestion(questionString);
-//            question.setQuestionID(file.get(IDNumber-2));
-//            question.setDifficulty(file.get(IDNumber-1));
-//            question.setAnswerA(file.get(IDNumber+1));
-//            question.setAnswerB(file.get(IDNumber+2));
-//            question.setAnswerC(file.get(IDNumber+3));
-//            question.setAnswerD(file.get(IDNumber+4));
-//            question.setCorrectAnswer(file.get(IDNumber+5));
-//            question.setHint(file.get(IDNumber+6));
-//            question.setQuestionLine(IDNumber+1);
-//
-//            questions.add(question);
-//
-//            reader.close();
-//
-//            return question;
-//        }
-
-        System.out.printf(GameMessages.REPEATED_QUESTIONS);
-
-        return null;
-    }
-
-    private void formatQuestions(Question question) {
+    private void formatQuestions(Question question, PlayerConnectionHandler playerConnectionHandler) {
 
         int space = question.getAnswerA().length() > question.getAnswerC().length() ?
                 question.getAnswerA().length() - question.getAnswerC().length() :
@@ -223,39 +58,99 @@ public class Game implements Runnable{
         System.out.println();
     }
 
-    public void showHint() {
+    public int getTotalNumberOfQuestions() {
+        try {
+            this.totalNumberOfQuestions = Files.readAllLines(Paths.get("./src/q&a.txt")).stream()
+                    .filter(q -> q.endsWith("?"))
+                    .toList()
+                    .size();
 
-        if (this.player.getHintsRemaining() == 0) {
-            System.out.println(GameMessages.NO_MORE_HINTS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return totalNumberOfQuestions;
+    }
+
+    public Question pickRandomQuestion(PlayerConnectionHandler playerConnectionHandler) throws IOException {
+
+        // toDo: Deviamos ter feito uma classe para ler o ficheiro todo e ir buscar daí em vez de o ler sempre que fazemos questão nova
+
+        if (playerConnectionHandler.questions.size() == getTotalNumberOfQuestions()) {
+            System.out.println(GameMessages.NO_MORE_QUESTIONS);
+            return null;
+        }
+
+        BufferedReader reader = new BufferedReader(new FileReader("./src/q&a.txt"));
+
+        int lines = 0;
+
+        while (reader.readLine() != null) {
+            lines++;
+        }
+
+        List<String> file = Files.readAllLines(Paths.get("./src/q&a.txt"));
+        int randomNumber = (int) ((Math.random() * (lines - 0)) + 0);
+        String randomQuestion = file.get(randomNumber);
+
+        if (randomQuestion.endsWith("?") && !playerConnectionHandler.repeatedQuestion(randomQuestion)) {
+
+            Question question = new Question();
+
+            question.setQuestion(randomQuestion);
+            question.setQuestionID(file.get(randomNumber - 2));
+            question.setDifficulty(file.get(randomNumber - 1));
+            question.setAnswerA(file.get(randomNumber + 1));
+            question.setAnswerB(file.get(randomNumber + 2));
+            question.setAnswerC(file.get(randomNumber + 3));
+            question.setAnswerD(file.get(randomNumber + 4));
+            question.setCorrectAnswer(file.get(randomNumber + 5));
+            question.setHint(file.get(randomNumber + 6));
+            question.setQuestionLine(randomNumber + 1);
+
+            playerConnectionHandler.questions.add(question);
+
+            reader.close();
+
+            return question;
+        }
+
+        return pickRandomQuestion(playerConnectionHandler);
+    }
+
+    private void show_Hint(PlayerConnectionHandler playerConnectionHandler) {
+
+        if (playerConnectionHandler.getHintsRemaining() == 0) {
+            transmitWithoutUserName(playerConnectionHandler.getName(), GameMessages.NO_MORE_HINTS);
             return;
         }
 
-        Question question = questions.get(questions.size() - 1);
+        Question question = playerConnectionHandler.questions.get(playerConnectionHandler.questions.size() - 1);
 
         if (question.isShowHint()) {
-            System.out.printf(GameMessages.HELP_ALREADY_USED);
+            transmitWithoutUserName(playerConnectionHandler.getName(), GameMessages.HELP_ALREADY_USED);
             return;
         }
 
-        System.out.println(question.getHint());
-        System.out.println();
-        this.player.setHintsRemaining(this.player.getHintsRemaining() - 1);
+        transmitWithoutUserName(playerConnectionHandler.getName(), question.getHint());
+        transmitWithoutUserName(playerConnectionHandler.getName(), "");
+        playerConnectionHandler.setHintsRemaining(playerConnectionHandler.getHintsRemaining() - 1);
         question.setShowHint(true);
     }
 
-    public void show5050() throws IOException {
+    private void show_5050(PlayerConnectionHandler playerConnectionHandler) throws IOException, InterruptedException {
 
-        //Question should have a List<Answers> answers (answers.get(0)-> a) etc...)
+        // toDo Question should have a List<Answers> answers (answers.get(0)-> a) etc...) for easier implementation of 5050
 
-        if (this.player.get_5050Remaining() == 0) {
-            System.out.println(GameMessages.NO_MORE_5050);
+        if (playerConnectionHandler.get_5050Remaining() == 0) {
+            transmitWithoutUserName(playerConnectionHandler.getName(), GameMessages.NO_MORE_5050);
             return;
         }
 
-        Question question = questions.get(questions.size() - 1);
+        Question question = playerConnectionHandler.questions.get(playerConnectionHandler.questions.size() - 1);
 
         if (question.isShow5050()) {
-            System.out.printf(GameMessages.HELP_ALREADY_USED);
+            transmitWithoutUserName(playerConnectionHandler.getName(), GameMessages.HELP_ALREADY_USED);
             return;
         }
 
@@ -325,56 +220,27 @@ public class Game implements Runnable{
         }
 
         question.setShow5050(true);
-        this.player.set_5050Remaining(this.player.get_5050Remaining() - 1);
-        showQuestion(question);
+        playerConnectionHandler.set_5050Remaining(playerConnectionHandler.get_5050Remaining() - 1);
+        transmitQuestion(playerConnectionHandler, question);
 
     }
 
-    public boolean checkValidInput(String input) {
-        if (input.equalsIgnoreCase("a") || input.equalsIgnoreCase("b") ||
-                input.equalsIgnoreCase("c") || input.equalsIgnoreCase("d") ||
-                input.equalsIgnoreCase("f") || input.equalsIgnoreCase("h")) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkCorrectAnswer() {
-        Question question = questions.get(questions.size() - 1);
-        Scanner scanner = new Scanner(System.in);
-        String answer = scanner.nextLine();
-        System.out.println();
-        if (!checkValidInput(answer)) {
-            System.out.printf(GameMessages.INVALID_INPUT);
-            return checkCorrectAnswer();
-        }
-        if (answer.equalsIgnoreCase(question.getCorrectAnswer())) {
-            System.out.printf(GameMessages.CORRECT_ANSWER, player.getName());
-            System.out.println();
-            return true;
-        }
-        System.out.printf(GameMessages.WRONG_ANSWER, player.getName(), question.getCorrectAnswer());
-        System.out.println();
-        player.setLivesRemaining(player.getLivesRemaining() - 1);
-        return false;
-    }
-
-    public void loading() throws InterruptedException {
+    private void loading() throws InterruptedException {
 
         System.out.println();
 
-        new Thread(()-> {
+        new Thread(() -> {
             int i = 0;
-            while(i++ < 100) {
+            while (i++ < 100) {
                 System.out.print("Loading Questions: [");
-                int j=0;
-                while(j++<i){
-                    System.out.print(ConsoleColors.GREEN+ "€" + ConsoleColors.RESET) ;
+                int j = 0;
+                while (j++ < i) {
+                    System.out.print(ConsoleColors.GREEN + "€" + ConsoleColors.RESET);
                 }
-                while(j++<100){
+                while (j++ < 100) {
                     System.out.print(" ");
                 }
-                System.out.print("] : "+ i+"%");
+                System.out.print("] : " + i + "%");
                 try {
                     Thread.sleep(50l);
                 } catch (InterruptedException e) {
@@ -387,156 +253,109 @@ public class Game implements Runnable{
         Thread.sleep(8000);
     }
 
-    public /*synchronized*/ void play_() throws IOException, InterruptedException {
+    private void gameOver() {
 
-        broadcast(GameMessages.GAME_STARTED);
+        System.out.println("Game is over");
+        System.out.println("The winner is " + players.get(0).name);
+        System.out.println("=================================================================");
+        broadcast("Game is over");
+        broadcast(" ");
+        broadcast("Congrats " + players.get(0).getName() + " you won !!");
+        broadcast("=================================================================");
 
-        System.out.println(players.size());
+    }
 
-        loading();
+    private Question transmitQuestion(PlayerConnectionHandler playerHandler) throws InterruptedException, IOException {
 
-        Scanner scanner = new Scanner(System.in);
+        Question question = pickRandomQuestion(playerHandler);
+        transmit(playerHandler.getName(), question.getQuestion());
+        Thread.sleep(500);
+        transmitWithoutUserName(playerHandler.getName(), "");
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerA());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerB());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerC());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerD());
+        broadcast("");
+        transmitWithoutUserName(playerHandler.getName(), GameMessages.SELECT_ANSWER);
 
-//        while (player.getLivesRemaining() > 0 && totalNumberOfQuestions >= getQuestionsAsked()) {
+        return question;
+    }
 
-        Thread.sleep(2000);
+    private void transmitQuestion(PlayerConnectionHandler playerHandler, Question question) throws InterruptedException, IOException {
 
-        boolean roundIsOver = false;
+        transmit(playerHandler.getName(), question.getQuestion());
+        Thread.sleep(500);
+        transmitWithoutUserName(playerHandler.getName(), "");
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerA());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerB());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerC());
+        transmitWithoutUserName(playerHandler.getName(), question.getAnswerD());
+        broadcast("");
+        transmitWithoutUserName(playerHandler.getName(), GameMessages.SELECT_ANSWER);
+    }
 
-        broadcast(pickRandomQuestion().getQuestion());
+    private void round(PlayerConnectionHandler playerHandler) throws IOException, InterruptedException {
 
-        showRandomQuestion();
+        playerHandler.send(playerHandler.name + " is your turn to answer...");
+        playerHandler.send("");
+        System.out.println(playerHandler.name + " is playing...");
 
-        System.out.printf(GameMessages.SELECT_ANSWER);
+        for (PlayerConnectionHandler ph : players) {
+            if (ph != playerHandler) {
+                ph.send(playerHandler.name + " is playing...");
+                ph.send("");
+            }
+        }
 
-        while(!roundIsOver){
-            String choice = scanner.nextLine();
+        Question question = transmitQuestion(playerHandler);
+
+
+        boolean playerHasFinished = false;
+
+        while (!playerHasFinished) {
+
+            String choice = playerHandler.in.readLine();
+
             switch (choice) {
                 case "a", "b", "c", "d":
-                    System.out.printf(GameMessages.LOCK_ANSWER);
-                    checkCorrectAnswer();
-                    roundIsOver = true;
+
+                    if (choice.equalsIgnoreCase(question.getCorrectAnswer())) {
+                        transmitWithoutUserName(playerHandler.getName(), GameMessages.CORRECT_ANSWER);
+                    } else {
+                        transmitWithoutUserName(playerHandler.getName(), ConsoleColors.RED_BOLD_BRIGHT + "You guessed wrong. The correct answer was " + question.getCorrectAnswer() + ")" + ConsoleColors.RESET);
+                        playerHandler.setLivesRemaining(playerHandler.getLivesRemaining() - 1);
+                        transmitWithoutUserName(playerHandler.getName(), "You have " + playerHandler.getLivesRemaining() + " lives remaining");
+                    }
+                    playerHasFinished = true;
                     break;
+
                 case "f":
-                    show5050();
+                    show_5050(playerHandler);
                     break;
+
                 case "h":
-                    showHint();
+                    show_Hint(playerHandler);
                     break;
+
+                case "s":
+                    Question newQuestion = transmitQuestion(playerHandler);
+                    question = newQuestion;
+                    break;
+
                 default:
-                    System.out.printf(GameMessages.INVALID_INPUT);
+                    transmitWithoutUserName(playerHandler.getName(), GameMessages.INVALID_INPUT);
+
             }
+
         }
-//        }
+
+        if (playerHandler.getLivesRemaining() == 0) {
+            transmitWithoutUserName(playerHandler.getName(), "You have lost!");
+            broadcast_(playerHandler.getName(), "has left the game");
+            removePlayer(playerHandler);
+        }
+
     }
-
-//    public void play(Player player) throws IOException, InterruptedException {
-//
-//        this.player = player;
-//
-//        System.out.printf(GameMessages.GAME_STARTED);
-//
-//        loading();
-//
-//        Scanner scanner = new Scanner(System.in);
-//
-//        while (player.getLivesRemaining() > 0 && totalNumberOfQuestions >= getQuestionsAsked()) {
-//
-//            Thread.sleep(2000);
-//
-//            boolean roundIsOver = false;
-//
-//            System.out.printf(GameMessages.ROUND_NUMBER, (getQuestionsAsked() + 1));
-//
-//            showRandomQuestion();
-//
-//            System.out.printf(GameMessages.SELECT_ANSWER);
-//
-//            while(!roundIsOver){
-//                String choice = scanner.nextLine();
-//                switch (choice) {
-//                    case "a", "b", "c", "d":
-//                        System.out.printf(GameMessages.LOCK_ANSWER);
-//                        checkCorrectAnswer();
-//                        roundIsOver = true;
-//                        break;
-//                    case "f":
-//                        show5050();
-//                        break;
-//                    case "h":
-//                        showHint();
-//                        break;
-//                    default:
-//                        System.out.printf(GameMessages.INVALID_INPUT);
-//                }
-//            }
-//        }
-//    }
-
-    @Override
-    public /*synchronized*/ void run() {
-
-        broadcast(GameMessages.GAME_STARTED);
-
-        System.out.println(players.size());
-
-        try {
-            loading();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Scanner scanner = new Scanner(System.in);
-
-        while (player.getLivesRemaining() > 0 && totalNumberOfQuestions >= getQuestionsAsked()) {
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            boolean roundIsOver = false;
-
-            try {
-                broadcast(pickRandomQuestion().getQuestion());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                showRandomQuestion();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            System.out.printf(GameMessages.SELECT_ANSWER);
-
-            while(!roundIsOver){
-                String choice = scanner.nextLine();
-                switch (choice) {
-                    case "a", "b", "c", "d":
-                        System.out.printf(GameMessages.LOCK_ANSWER);
-                        checkCorrectAnswer();
-                        roundIsOver = true;
-                        break;
-                    case "f":
-                        try {
-                            show5050();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case "h":
-                        showHint();
-                        break;
-                    default:
-                        System.out.printf(GameMessages.INVALID_INPUT);
-                }
-            }
-        }
-    }
-
 
     public class Question {
 
@@ -677,69 +496,103 @@ public class Game implements Runnable{
 //    }
 
 
-
+//    public void roundMaker(PlayerConnectionHandler player)throws IOException {
+//
+//        while (player.getLivesRemaining() > 0 && totalNumberOfQuestions >= player.getQuestionsAsked()) {
+//
+//            Scanner scanner = new Scanner(System.in);
+//
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            boolean roundIsOver = false;
+//
+//            try {
+//                broadcast(pickRandomQuestion(player).getQuestion());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            try {
+//                showRandomQuestion(player);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            System.out.printf(GameMessages.SELECT_ANSWER);
+//
+//            while(!roundIsOver){
+//                String choice = scanner.nextLine();
+//                switch (choice) {
+//                    case "a", "b", "c", "d":
+//                        System.out.printf(GameMessages.LOCK_ANSWER);
+//                        checkCorrectAnswer();
+//                        roundIsOver = true;
+//                        break;
+//                    case "f":
+//                        try {
+//                            show5050();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                    case "h":
+//                        showHint();
+//                        break;
+//                    default:
+//                        System.out.printf(GameMessages.INVALID_INPUT);
+//                }
+//            }
+//        }
+//    }
 
     private ServerSocket serverSocket;
     private ExecutorService service;
-    private final List<PlayerConnectionHandler> players;
-
 
     public void start(int port) throws IOException, InterruptedException {
 
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        serverSocket = new ServerSocket(port);
+        this.serverSocket = new ServerSocket(port);
+        System.out.println("Game started. Waiting for players to connect...");
         service = Executors.newCachedThreadPool();
-        int numberOfConnections = 0;
 
-        while (true) {
-            acceptConnection(numberOfConnections);
-            ++numberOfConnections;
-
-//            for (int i = 0; i < players.size(); i++) {
-//                try {
-//                    play_(players.get(i));
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
-            service.submit(this);      // = newThread.start()
-
+        while (players.size() < numberOfPlayers) {
+            Socket clientSocket = serverSocket.accept();
+            PlayerConnectionHandler ph = new PlayerConnectionHandler(clientSocket);
+            players.add(ph);
+            service.submit(ph);
+            if (players.size() < numberOfPlayers) {
+                broadcast("");
+                transmit(ph.getName(), "Wait for other players to join");
+            }
         }
 
+        System.out.println("Ready to play!");
+
+        Thread.sleep(500);
+        new Thread(this).start();
+
 
     }
 
-    public void acceptConnection(int numberOfConnections) throws IOException {
-        Socket playerSocket = serverSocket.accept();
-        PlayerConnectionHandler playerConnectionHandler =
-                new PlayerConnectionHandler(playerSocket,
-                        GameMessages.DEFAULT_NAME + numberOfConnections);
-        service.submit(playerConnectionHandler);
-        this.player = playerConnectionHandler;
-        //addClient(clientConnectionHandler);
-    }
-
-    private void addPlayer(PlayerConnectionHandler playerConnectionHandler) {
-        /*synchronized (players) {
-            players.add(clientConnectionHandler);
-        }*/
-
-        players.add(playerConnectionHandler);
-        playerConnectionHandler.send(GameMessages.WELCOME);
-        broadcast(playerConnectionHandler.getName(), GameMessages.PLAYER_ENTERED_GAME);
-    }
-
-
-    public void broadcast(String name, String message) {
+    public void broadcast_(String name, String message) {
         players.stream()
                 .filter(handler -> !handler.getName().equals(name))
                 .forEach(handler -> handler.send(name + ": " + message));
+    }
+
+    public void transmit(String name, String message) {
+        players.stream()
+                .filter(handler -> handler.getName().equals(name))
+                .forEach(handler -> handler.send(name + ": " + message));
+    }
+
+    public void transmitWithoutUserName(String name, String message) {
+        players.stream()
+                .filter(handler -> handler.getName().equals(name))
+                .forEach(handler -> handler.send(message));
     }
 
     public void broadcast(String message) {
@@ -766,28 +619,59 @@ public class Game implements Runnable{
 
     public class PlayerConnectionHandler implements Runnable {
 
-
-
+        private boolean roundOver;
         private int hintsRemaining;
         private int _5050Remaining;
         private int livesRemaining;
         private boolean isPlaying;
         private int moneyAmount;
+        private List<Question> questions = new LinkedList<>();
+
 
         private String name;
         private Socket playerSocket;
         private BufferedWriter out;
+        private BufferedReader in;
         private String message;
 
 
-        public PlayerConnectionHandler(Socket clientSocket, String name) throws IOException {
+        public PlayerConnectionHandler(Socket clientSocket) throws IOException {
+
             this.playerSocket = clientSocket;
-            this.name = name;
             this.out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            this.name = name;
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            this.name = generateName();
             this.hintsRemaining = 3;
             this._5050Remaining = 3;
             this.livesRemaining = 3;
+
+
+        }
+
+        public List<Question> getQuestions() {
+            return questions;
+        }
+
+        public int getQuestionsAsked() {
+            return questions.size();
+        }
+
+        public boolean repeatedQuestion(String checkQuestion) {
+            for (Question question : questions) {
+                if (question.getQuestion().equals(checkQuestion)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean isRoundOver() {
+            return roundOver;
+        }
+
+        public void setRoundOver(boolean roundIsOver) {
+            this.roundOver = roundIsOver;
         }
 
         public String getName() {
@@ -799,7 +683,7 @@ public class Game implements Runnable{
         }
 
         public void setMoneyAmount(int moneyAmount) {
-            if(getMoneyAmount() < 0){
+            if (getMoneyAmount() < 0) {
                 this.moneyAmount = 0;
                 return;
             }
@@ -840,7 +724,7 @@ public class Game implements Runnable{
 
         @Override
         public void run() {
-            addPlayer(this);
+
             try {
                 // BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 Scanner in = new Scanner(playerSocket.getInputStream());
@@ -854,12 +738,11 @@ public class Game implements Runnable{
                         continue;
                     }
 
-                    broadcast(name, message);
+                    transmitWithoutUserName(this.getName(), " ");
+                    transmitWithoutUserName(this.getName(), GameMessages.LOCK_ANSWER);
                 }
             } catch (IOException e) {
                 System.err.println(GameMessages.CLIENT_ERROR + e.getMessage());
-            } finally {
-                removePlayer(this);
             }
         }
 
@@ -903,9 +786,63 @@ public class Game implements Runnable{
         public String getMessage() {
             return message;
         }
+
+        public String generateName() throws IOException {
+            send("");
+            send("Please enter your name");
+            String name = in.readLine();
+            return name;
+        }
+
+        public String waitForUserInput() throws IOException {
+            String choice = in.readLine();
+            return choice;
+        }
     }
 
+    @Override
+    public void run() {
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+        broadcast("");
+        broadcast("");
+        broadcast(GameMessages.GAME_STARTED);
+
+        try {
+            loading();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        boolean isGameOver = false;
+
+        while (!isGameOver) {
+            for (int i = 0; i < players.size(); i++) {
+                try {
+                    round(players.get(i));
+                    if (players.size() == 1) {
+                        isGameOver = true;
+                        gameOver();
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+    }
 
 }
+

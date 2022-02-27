@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         // write your code here
 
-        Game game = new Game();
+//        Game game = new Game();
 //
 //        System.out.println(game.pickRandomQuestion().getQuestion());
 //        System.out.println(game.pickRandomQuestion().getQuestion());
@@ -73,8 +73,11 @@ public class Main {
 //            e.printStackTrace();
 //        }
 
-//        String a = ConsoleColors.RED + "     "  + ConsoleColors.RESET;
-//        System.out.println(a);
+//        try {
+//            System.out.println(blink());
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 
 //        try {
@@ -85,4 +88,19 @@ public class Main {
 
 
     }
+
+//    public static String blink() throws InterruptedException {
+//        int i = 0;
+////        while(i < 5){
+//        String a = "";
+//            a = ConsoleColors.YELLOW_BACKGROUND_BRIGHT + "     " + ConsoleColors.BLACK_BOLD + "A" + ConsoleColors.YELLOW_BACKGROUND_BRIGHT + "     "  + ConsoleColors.RESET;
+//            Thread.sleep(200);
+//            a = ConsoleColors.RED_BACKGROUND + "     " + ConsoleColors.BLACK_BOLD + "A" + ConsoleColors.RED_BACKGROUND + "     "  + ConsoleColors.RESET;
+//            Thread.sleep(200);
+//            a = ConsoleColors.BLUE_BACKGROUND_BRIGHT + "     " + ConsoleColors.BLACK_BOLD + "A" + ConsoleColors.BLUE_BACKGROUND_BRIGHT + "     "  + ConsoleColors.RESET;
+//
+////            i++;
+////        }
+//        return a;
+//    }
 }

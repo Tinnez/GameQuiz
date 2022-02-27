@@ -17,7 +17,7 @@ public class GameMessages {
     public static final String INVALID_QUESTION_ID = "Invalid or inexistent ID number\n";
     public static final String NO_MORE_HINTS = "You have no hints remaining\n";
     public static final String NO_MORE_5050 = "You have no 50/50 remaining\n";
-    public static final String INVALID_INPUT = "Invalid input. Choose one of the valid inputs: (a, b, c, d, f, h)\n";
+    public static final String INVALID_INPUT = "Invalid input. Choose one of the valid inputs: (a, b, c, d, f for 50/50, h for hint, s to swap question)\n";
     public static final String HELP_ALREADY_USED = "You have already used this help\n";
     public static final String LOCK_ANSWER = "Do you want to lock your answer? Repeat character to confirm or choose different answer\n";
     public static final String SELECT_ANSWER = "Select your answer\n";
@@ -32,7 +32,6 @@ public class GameMessages {
 
 
 
-    public static final String DEFAULT_NAME = "PLAYER-";
     public static final String PLAYER_ENTERED_GAME = " entered the game.";
     public static final String NO_SUCH_COMMAND = "⚠️ Invalid command!";
     public static final String COMMANDS_LIST = """
@@ -40,11 +39,10 @@ public class GameMessages {
             /list -> gets you the list of connected players
             /whisper <username> <message> -> lets you whisper a message to a single connected players
             /quit -> exits the server""";
-    public static final String CLIENT_DISCONNECTED = " left the chat.";
+    public static final String CLIENT_DISCONNECTED = " left the game.";
     public static final String WHISPER_INSTRUCTIONS = "Invalid whisper use. Correct use: '/whisper <username> <message>";
     public static final String NO_SUCH_CLIENT = "The client you want to whisper to doesn't exists.";
     public static final String WHISPER = "(whisper)";
-    public static final String WELCOME = "Welcome to the QUIZ GAME. Let's play !";
     public static final String CLIENT_ERROR = "Something went wrong with this client's connection. Error: ";
 
 }
